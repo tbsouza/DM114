@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import siecola.com.br.dm114.R;
+
 public class WSUtil {
 
     // Pega infos do endereco do servidor no shared preference

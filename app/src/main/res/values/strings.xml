@@ -2,8 +2,18 @@
     <string name="app_name">DM114</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">DM114</string>
+    <string name="nav_header_title">DM114 - Thiago</string>
     <string name="nav_header_subtitle">Thiago Barbosa de Souza</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="pref_ws_host" />
+    <string name="pref_ws_default_host" />
+    <string name="pref_host_port" />
+    <string name="pref_ws_default_port" />
+    <string name="pref_user_login" />
+    <string name="pref_user_password" />
+    <string name="pref_ws_default_username" />
+    <string name="pref_ws_default_password" />
+    <string name="pref_ws_access_token" />
+    <string name="pref_ws_access_token_expiration" />
 </resources>

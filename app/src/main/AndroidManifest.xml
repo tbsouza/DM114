@@ -30,6 +30,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name="siecola.com.br.dm114.gcm.GcmBroadcastReceiver" >
+            <intent-filter>
+                <!-- Receives the actual messages. -->
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="br.com.siecola.helloworldturbo" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
