@@ -14,6 +14,7 @@ public class WSUtil {
     private WSUtil() {
     }
 
+    // Pega o endereco do host do servico de vendas
     public static String getHostAddress(Context context) {
         String host;
         String baseAddress;
@@ -41,5 +42,30 @@ public class WSUtil {
     }
 
 
+    // Pega o endereco do host do servico de mensagem
+    public static String getHostMessageAddress (Context context) {
+        String host;
+        String baseAddress;
+        int port;
 
+        SharedPreferences sharedSettings = PreferenceManager.getDefaultSharedPreferences(context);
+
+        host = sharedSettings.getString(context.getString(R.string.pref_ws_host_message),
+                context.getString(R.string.pref_ws_default_host_message));
+
+        port = sharedSettings.getInt(context.getString(R.string.pref_host_port),
+                Integer.parseInt(context.getString(R.string.pref_ws_default_port)));
+
+        if (host.endsWith("/")) {
+            host = host.substring(0, host.length() - 1);
+        }
+
+        if (!host.startsWith("http://")) {
+            host = "http://" + host;
+        }
+
+        baseAddress = host + ":" + port;
+
+        return baseAddress;
+    }
 }

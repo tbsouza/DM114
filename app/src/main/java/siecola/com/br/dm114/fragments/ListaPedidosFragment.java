@@ -37,7 +37,7 @@ public class ListaPedidosFragment extends Fragment implements OrderEvents {
         getActivity().setTitle("Pedidos");
 
         // diz ao android que esta classe possui um menu proprio
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
 
         pedidos = new ArrayList<Pedido>();
         for (int j = 0; j < 50; j++) {

@@ -36,6 +36,7 @@ public class WebServiceClient {
 
         WebServiceResponse webServiceResponse;
 
+        // se o token nao for valido, pega um novo token
         if (!isTokenValid(context)) {
             webServiceResponse = authenticate(context);
             if (webServiceResponse.getResponseCode() != 200) {
@@ -63,6 +64,7 @@ public class WebServiceClient {
     }
 
 
+    // Pega o token de acesso
     private static WebServiceResponse authenticate(Context context) {
         WebServiceResponse webServiceResponse = new WebServiceResponse();
         String baseAddress = WSUtil.getHostAddress(context);
@@ -96,8 +98,11 @@ public class WebServiceClient {
             if (conn.getResponseCode() == 200) {
                 String tokenResponse = readIt(is);
                 Gson tokenGson = new Gson();
+
                 accessToken = tokenGson.fromJson(tokenResponse,
                         AccessToken.class);
+
+                // Salva o access token no shared preferences
                 SharedPreferences.Editor editor = sharedSettings.edit();
                 editor.putString(context.getString(
                         R.string.pref_ws_access_token),
@@ -107,6 +112,7 @@ public class WebServiceClient {
                         Calendar.getInstance().getTime().getTime() +
                                 accessToken.getExpires_in() * 1000);
                 editor.commit();
+
                 webServiceResponse.setResponseCode(200);
                 webServiceResponse.setResponseMessage(tokenResponse);
             } else {

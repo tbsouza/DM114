@@ -43,7 +43,8 @@ public class OrdersFragment extends Fragment implements OrderEvents {
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         startOrderDetail(id);
                     }
-                });
+                }
+        );
 
 
         // Verifica se tem conexao

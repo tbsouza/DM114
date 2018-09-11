@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.util.Log;
+
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ public class GCMRegister {
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private IOException ioException;
     private static final long REGISTRATION_EXPIRY_TIME_MS = 1000 * 3600 * 24 * 7;
+
     private Context context;
     private GoogleCloudMessaging gcm;
     private String regid;
@@ -32,7 +34,6 @@ public class GCMRegister {
         this.context = context;
         this.gcmRegisterEvents = gcmRegisterEvents;
     }
-
 
 
     private void setRegistrationId(String regId) {
@@ -52,7 +53,7 @@ public class GCMRegister {
     }
 
 
-    private void setSenderId (String senderId) {
+    private void setSenderId(String senderId) {
         final SharedPreferences prefs = getGCMPreferences();
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_SENDER_ID, senderId);
@@ -60,7 +61,7 @@ public class GCMRegister {
     }
 
 
-    private void clearRegistrationId () {
+    private void clearRegistrationId() {
         final SharedPreferences prefs = getGCMPreferences();
         SharedPreferences.Editor editor = prefs.edit();
         editor.remove(PROPERTY_REG_ID);
@@ -114,8 +115,7 @@ public class GCMRegister {
         int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
         int currentVersion = getAppVersion(context);
 
-        if (registeredVersion != currentVersion || isRegistrationExpired())
-        {
+        if (registeredVersion != currentVersion || isRegistrationExpired()) {
             Log.v(TAG, "App version changed or registration expired.");
             return "";
         }
@@ -124,7 +124,7 @@ public class GCMRegister {
     }
 
 
-    public String getSenderId () {
+    public String getSenderId() {
         final SharedPreferences prefs = getGCMPreferences();
         String senderId = prefs.getString(PROPERTY_SENDER_ID, "");
 
@@ -138,82 +138,77 @@ public class GCMRegister {
 
     public boolean isRegistrationExpired() {
         final SharedPreferences prefs = getGCMPreferences();
-        long expirationTime = prefs.getLong(PROPERTY_ON_SERVER_EXPIRATION_TIME,-1);
+        long expirationTime = prefs.getLong(PROPERTY_ON_SERVER_EXPIRATION_TIME, -1);
 
         return System.currentTimeMillis() > expirationTime;
     }
 
 
     @SuppressLint("StaticFieldLeak")
-    private void registerBackground() { new AsyncTask<Void, Void, String>() {
+    private void registerBackground() {
+        new AsyncTask<Void, Void, String>() {
 
-        @Override
-        protected String doInBackground(Void... params) {
-            String msg = "";
-            try {
-                if (gcm == null) {
-                    gcm = GoogleCloudMessaging.getInstance(context);
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(context);
+                    }
+                    regid = gcm.register(senderID);
+                    setRegistrationId(regid);
+                    msg = regid;
+                } catch (IOException ex) {
+                    msg = null;
+                    ioException = ex;
                 }
-                regid = gcm.register(senderID);
-                setRegistrationId(regid);
-                msg = regid;
-            } catch (IOException ex) {
-                msg = null;
-                ioException = ex;
+                return msg;
             }
-            return msg;
-        }
 
-        @Override
-        protected void onPostExecute(String registrationID) {
-            if (registrationID != null) {
-                Log.i(TAG, "Device registered, registration id=" + registrationID);
-                gcmRegisterEvents.gcmRegisterFinished(registrationID);
+            @Override
+            protected void onPostExecute(String registrationID) {
+                if (registrationID != null) {
+                    Log.i(TAG, "Device registered, registration id=" + registrationID);
+                    gcmRegisterEvents.gcmRegisterFinished(registrationID);
+                } else {
+                    gcmRegisterEvents.gcmRegisterFailed(ioException);
+                }
             }
-            else {
-                gcmRegisterEvents.gcmRegisterFailed(ioException);
-            }
-        }
-    }.execute(null, null, null);
+        }.execute(null, null, null);
 
     }
-
 
 
     @SuppressLint("StaticFieldLeak")
-    public void unRegister() { new AsyncTask<Void, Void, Boolean>() {
+    public void unRegister() {
+        new AsyncTask<Void, Void, Boolean>() {
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            try {
-                if (gcm == null) {
-                    gcm = GoogleCloudMessaging.getInstance(context);
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(context);
+                    }
+
+                    gcm.unregister();
+                    clearRegistrationId();
+
+                    return true;
+                } catch (IOException ex) {
+                    ioException = ex;
+                    return false;
                 }
-
-                gcm.unregister();
-                clearRegistrationId();
-
-                return true;
-            } catch (IOException ex) {
-                ioException = ex;
-                return false;
             }
-        }
 
-        @Override
-        protected void onPostExecute(Boolean unregistered) {
-            if (unregistered) {
-                Log.i(TAG, "Device unregistered");
-                gcmRegisterEvents.gcmUnregisterFinished();
+            @Override
+            protected void onPostExecute(Boolean unregistered) {
+                if (unregistered) {
+                    Log.i(TAG, "Device unregistered");
+                    gcmRegisterEvents.gcmUnregisterFinished();
+                } else {
+                    gcmRegisterEvents.gcmUnregisterFailed(ioException);
+                }
             }
-            else {
-                gcmRegisterEvents.gcmUnregisterFailed(ioException);
-            }
-        }
-    }.execute(null, null, null);
-
+        }.execute(null, null, null);
     }
-
-
-
 }
