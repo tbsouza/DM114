@@ -37,6 +37,7 @@ public class LoginFragment extends Fragment implements OrderEvents {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         // Infla a activity a ser exibida
         View rootView = inflater.inflate(R.layout.content_main, container, false);
@@ -48,22 +49,32 @@ public class LoginFragment extends Fragment implements OrderEvents {
         editSenha = (EditText) rootView.findViewById(R.id.editSenha);
         btnLogin = (Button) rootView.findViewById(R.id.btnLogin);
 
+        // verifica se ja esta salvo
+        if( savedInstanceState != null ) {
+            login = savedInstanceState.getString(PREF_LOGIN, "");
+            password = savedInstanceState.getString(PREF_PASSWORD, "");
+        }else{
+            login = preferences.getString(PREF_LOGIN, "");
+            password = preferences.getString(PREF_PASSWORD, "");
+        }
+
+        // tenta fazer autenticação e login
+        autenticar();
+
         // Acao de click do botao de login
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Verifica a conexao do usuario
-                if ( CheckNetworkConnection.isNetworkConnected(getActivity()) ) {
-                    login = editLogin.getText().toString();
-                    password = editSenha.getText().toString();
-                    if( login!="" && password!="" ){
-                        savePreferences(login,password);
-                        Toast.makeText(getActivity(),"Login e Senha salvos com sucesso.", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(getActivity(),"Digite login e senha.", Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    Toast.makeText(getActivity(),"Sem conexão com a internet.", Toast.LENGTH_SHORT).show();
+                // Pega login e senha digitados pelo usuário
+                login = editLogin.getText().toString();
+                password = editSenha.getText().toString();
+
+                // salva e tenta fazer a autenticacao
+                if ( !login.isEmpty() && !password.isEmpty() ) {
+                    saveLogin();
+                    autenticar();
+                } else {
+                    Toast.makeText(getActivity(), "Digite login e senha.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -71,8 +82,21 @@ public class LoginFragment extends Fragment implements OrderEvents {
         return rootView;
     }
 
+
+    private void autenticar() {
+
+        if ( CheckNetworkConnection.isNetworkConnected(getActivity()) ){
+
+        }
+
+        //TODO pegar tolken de acesso
+        //TODO fazer autenticação no servidor de vendas
+        Toast.makeText(getActivity(), "Acesso com sucesso.", Toast.LENGTH_SHORT).show();
+    }
+
+
     // Salva login e senha no shared preferences
-    private void savePreferences(String login, String password) {
+    private void saveLogin() {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(PREF_LOGIN, login);
         editor.putString(PREF_PASSWORD, password);
