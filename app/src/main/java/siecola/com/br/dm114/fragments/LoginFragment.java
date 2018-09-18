@@ -11,12 +11,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.List;
 
 import siecola.com.br.dm114.R;
 import siecola.com.br.dm114.models.Order;
 import siecola.com.br.dm114.tasks.OrderEvents;
 import siecola.com.br.dm114.utils.CheckNetworkConnection;
+import siecola.com.br.dm114.utils.WSConstants;
+import siecola.com.br.dm114.utils.WSUtil;
+import siecola.com.br.dm114.webservices.WebServiceClient;
 import siecola.com.br.dm114.webservices.WebServiceResponse;
 
 public class LoginFragment extends Fragment implements OrderEvents {
@@ -49,17 +53,19 @@ public class LoginFragment extends Fragment implements OrderEvents {
         editSenha = (EditText) rootView.findViewById(R.id.editSenha);
         btnLogin = (Button) rootView.findViewById(R.id.btnLogin);
 
-        // verifica se ja esta salvo
-        if( savedInstanceState != null ) {
-            login = savedInstanceState.getString(PREF_LOGIN, "");
-            password = savedInstanceState.getString(PREF_PASSWORD, "");
-        }else{
-            login = preferences.getString(PREF_LOGIN, "");
-            password = preferences.getString(PREF_PASSWORD, "");
-        }
 
-        // tenta fazer autenticação e login
-        autenticar();
+        // Registra access token
+        // registra GCM
+
+
+        // verifica se ja esta salvo no shared preferences
+        login = preferences.getString(PREF_LOGIN, "");
+        password = preferences.getString(PREF_PASSWORD, "");
+
+        if (!login.isEmpty() && !password.isEmpty()) {
+            // tenta fazer autenticação e login
+            autenticar();
+        }
 
         // Acao de click do botao de login
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -70,9 +76,9 @@ public class LoginFragment extends Fragment implements OrderEvents {
                 password = editSenha.getText().toString();
 
                 // salva e tenta fazer a autenticacao
-                if ( !login.isEmpty() && !password.isEmpty() ) {
-                    saveLogin();
-                    autenticar();
+                if (!login.isEmpty() && !password.isEmpty()) {
+                    saveLogin(); // salva na sharede preoferences
+                    autenticar(); // tenta fazer autenticação e login
                 } else {
                     Toast.makeText(getActivity(), "Digite login e senha.", Toast.LENGTH_SHORT).show();
                 }
@@ -85,15 +91,17 @@ public class LoginFragment extends Fragment implements OrderEvents {
 
     private void autenticar() {
 
-        if ( CheckNetworkConnection.isNetworkConnected(getActivity()) ){
-
+        if (CheckNetworkConnection.isNetworkConnected(getActivity())) {
+            try {
+                WebServiceResponse response = WebServiceClient.init(getActivity(), WSUtil.getHostAddress(getActivity()), WSConstants.METHOD_GET);
+                Toast.makeText(getActivity(), "Autenticação: " + response.getResponseMessage(), Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(getActivity(), "Sem conexão com internet.", Toast.LENGTH_SHORT).show();
         }
-
-        //TODO pegar tolken de acesso
-        //TODO fazer autenticação no servidor de vendas
-        Toast.makeText(getActivity(), "Acesso com sucesso.", Toast.LENGTH_SHORT).show();
     }
-
 
     // Salva login e senha no shared preferences
     private void saveLogin() {

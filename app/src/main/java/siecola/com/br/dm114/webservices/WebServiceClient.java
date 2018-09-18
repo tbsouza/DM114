@@ -32,7 +32,7 @@ public class WebServiceClient {
     }
 
 
-    private static WebServiceResponse init(Context context, String host, String method) throws IOException {
+    public static WebServiceResponse init(Context context, String host, String method) throws IOException {
 
         WebServiceResponse webServiceResponse;
 
