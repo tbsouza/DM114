@@ -8,8 +8,8 @@
     <string name="action_settings">Settings</string>
 
 
-    <string name="pref_user_login">pref_user_login</string>
-    <string name="pref_user_password">pref_user_password</string>
+    <string name="pref_user_login">pref_login</string>
+    <string name="pref_user_password">pref_password</string>
 
 
     <string name="pref_ws_host">pref_ws_host</string>

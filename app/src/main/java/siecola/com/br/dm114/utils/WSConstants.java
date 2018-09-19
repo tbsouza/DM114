@@ -21,4 +21,7 @@ public class WSConstants {
     public static final String PREF_WS_ACCESS_TOKEN = "pref_ws_access_token";
     public static final String PREF_WS_ACCESS_TOKEN_EXPIRATION = "pref_ws_access_token_expiration";
 
+    private static String PREF_LOGIN = "pref_login";
+    private static String PREF_PASSWORD = "pref_password";
+
 }

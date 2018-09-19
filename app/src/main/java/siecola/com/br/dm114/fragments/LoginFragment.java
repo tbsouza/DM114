@@ -1,9 +1,11 @@
 package siecola.com.br.dm114.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 import siecola.com.br.dm114.R;
+import siecola.com.br.dm114.gcm.GCMRegister;
 import siecola.com.br.dm114.models.Order;
 import siecola.com.br.dm114.tasks.OrderEvents;
 import siecola.com.br.dm114.utils.CheckNetworkConnection;
@@ -29,6 +32,7 @@ public class LoginFragment extends Fragment implements OrderEvents {
     private static String PREF_LOGIN = "pref_login";
     private static String PREF_PASSWORD = "pref_password";
     private SharedPreferences preferences;
+    private GCMRegister gcmRegister;
 
     // Variaveis de login e senha
     private String login;
@@ -79,6 +83,7 @@ public class LoginFragment extends Fragment implements OrderEvents {
                 if (!login.isEmpty() && !password.isEmpty()) {
                     saveLogin(); // salva na sharede preoferences
                     autenticar(); // tenta fazer autenticação e login
+                    registerGCM( getActivity() );
                 } else {
                     Toast.makeText(getActivity(), "Digite login e senha.", Toast.LENGTH_SHORT).show();
                 }
@@ -88,6 +93,11 @@ public class LoginFragment extends Fragment implements OrderEvents {
         return rootView;
     }
 
+    private void registerGCM(Activity activity) {
+
+
+    }
+
 
     private void autenticar() {
 
@@ -95,6 +105,7 @@ public class LoginFragment extends Fragment implements OrderEvents {
             try {
                 WebServiceResponse response = WebServiceClient.init(getActivity(), WSUtil.getHostAddress(getActivity()), WSConstants.METHOD_GET);
                 Toast.makeText(getActivity(), "Autenticação: " + response.getResponseMessage(), Toast.LENGTH_SHORT).show();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

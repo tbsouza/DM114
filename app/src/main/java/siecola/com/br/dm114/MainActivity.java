@@ -1,5 +1,7 @@
 package siecola.com.br.dm114;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
@@ -17,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import siecola.com.br.dm114.R;
+import siecola.com.br.dm114.fragments.LoginFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -83,25 +86,45 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        /*
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-        */
+        showFragment(id);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showFragment(int id) {
+
+        Class fragmentClass;
+        Fragment fragment = null; // instancia do fragmento a ser exibido
+        int backStackEntryCount = getFragmentManager().getBackStackEntryCount();
+
+        // Limpa o back stack
+        for (int j = 0; j < backStackEntryCount; j++) {
+            getFragmentManager().popBackStack();
+        }
+
+        try {
+            switch (id) {
+                case R.id.nav_login:
+                    fragmentClass = LoginFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    break;
+                default:
+                    fragmentClass = LoginFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (fragment != null) {
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit();
+        }
+
+
     }
 
     // Cria um canal de notificacao
