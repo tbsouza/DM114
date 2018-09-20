@@ -19,6 +19,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import siecola.com.br.dm114.R;
+import siecola.com.br.dm114.fragments.GCMFragment;
+import siecola.com.br.dm114.fragments.ListaPedidosFragment;
 import siecola.com.br.dm114.fragments.LoginFragment;
 
 public class MainActivity extends AppCompatActivity
@@ -108,6 +110,16 @@ public class MainActivity extends AppCompatActivity
             switch (id) {
                 case R.id.nav_login:
                     fragmentClass = LoginFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    break;
+                case R.id.nav_produtos:
+                    break;
+                case R.id.nav_pedidos:
+                    fragmentClass = ListaPedidosFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    break;
+                case R.id.nav_notificacoes:
+                    fragmentClass = GCMFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     break;
                 default:

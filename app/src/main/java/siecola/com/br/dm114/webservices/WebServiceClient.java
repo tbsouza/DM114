@@ -3,6 +3,7 @@ package siecola.com.br.dm114.webservices;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -23,6 +24,8 @@ import siecola.com.br.dm114.utils.WSUtil;
 
 public class WebServiceClient {
 
+    private static AccessToken tokenMock = new AccessToken();
+
     private static final String GET_TOKEN = "/oauth/token";
     private static final String TAG = "WebServiceClient";
     private static HttpURLConnection conn;
@@ -33,6 +36,11 @@ public class WebServiceClient {
 
 
     public static WebServiceResponse init(Context context, String host, String method) throws IOException {
+
+        tokenMock.setAccess_token("b030de87-840a-48cd-990e-e4a1ab8baec9");
+        tokenMock.setExpires_in(3444);
+        tokenMock.setToken_type("bearer");
+
 
         WebServiceResponse webServiceResponse;
 
@@ -83,8 +91,12 @@ public class WebServiceClient {
             //ClientId e secret (matilde:siecola em Base64)
             conn.setRequestProperty("Authorization", "Basic c2llY29sYTptYXRpbGRl");
             SharedPreferences sharedSettings = PreferenceManager.getDefaultSharedPreferences(context);
-            String wsUsername = sharedSettings.getString(context.getString(R.string.pref_user_login), context.getString(R.string.pref_ws_default_username));
-            String wsPassword = sharedSettings.getString(context.getString(R.string.pref_user_password), context.getString(R.string.pref_ws_default_password));
+            //String wsUsername = sharedSettings.getString(context.getString(R.string.pref_user_login), context.getString(R.string.pref_ws_default_username));
+            //String wsPassword = sharedSettings.getString(context.getString(R.string.pref_user_password), context.getString(R.string.pref_ws_default_password));
+
+            // login e password default
+            String wsUsername = context.getString(R.string.pref_ws_default_username);
+            String wsPassword = context.getString(R.string.pref_ws_default_password);
 
             String grantType = generateGrantType(wsUsername, wsPassword);
             conn.setDoOutput(true);
@@ -188,8 +200,11 @@ public class WebServiceClient {
             }
         }
 
-        accessToken = null;
-        return false;
+        accessToken = tokenMock;
+        return true;
+
+        //accessToken = null;
+        //return false;
     }
 
 

@@ -2,6 +2,7 @@ package siecola.com.br.dm114.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -47,6 +48,8 @@ public class LoginFragment extends Fragment implements OrderEvents {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getActivity().setTitle("Login");
+
         // Infla a activity a ser exibida
         View rootView = inflater.inflate(R.layout.content_main, container, false);
 
@@ -57,18 +60,14 @@ public class LoginFragment extends Fragment implements OrderEvents {
         editSenha = (EditText) rootView.findViewById(R.id.editSenha);
         btnLogin = (Button) rootView.findViewById(R.id.btnLogin);
 
-
-        // Registra access token
-        // registra GCM
-
-
         // verifica se ja esta salvo no shared preferences
         login = preferences.getString(PREF_LOGIN, "");
         password = preferences.getString(PREF_PASSWORD, "");
 
         if (!login.isEmpty() && !password.isEmpty()) {
-            // tenta fazer autenticação e login
+            // tenta fazer autenticação
             autenticar();
+            registerGCM( getActivity() );
         }
 
         // Acao de click do botao de login
@@ -104,13 +103,27 @@ public class LoginFragment extends Fragment implements OrderEvents {
         if (CheckNetworkConnection.isNetworkConnected(getActivity())) {
             try {
                 WebServiceResponse response = WebServiceClient.init(getActivity(), WSUtil.getHostAddress(getActivity()), WSConstants.METHOD_GET);
-                Toast.makeText(getActivity(), "Autenticação: " + response.getResponseMessage(), Toast.LENGTH_SHORT).show();
+                if( response.getResponseCode() == 200 ){
+                    Toast.makeText(getActivity(), "Autenticado com sucesso: ", Toast.LENGTH_SHORT).show();
+                    changeFragment( ListaPedidosFragment.class );
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             Toast.makeText(getActivity(), "Sem conexão com internet.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void changeFragment(Class fragmentClass) {
+
+        try {
+            Fragment fragment = (Fragment) fragmentClass.newInstance();
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit();
+        } catch ( Exception e) {
+            e.printStackTrace();
         }
     }
 
