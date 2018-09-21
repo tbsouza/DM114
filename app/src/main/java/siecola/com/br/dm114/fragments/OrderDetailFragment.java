@@ -52,6 +52,7 @@ public class OrderDetailFragment extends Fragment implements OrderEvents {
 
             if (CheckNetworkConnection.isNetworkConnected(getActivity())) {
                 OrderTasks orderTasks = new OrderTasks(getActivity(), this);
+                // busca o pedido pelo
                 orderTasks.getOrderById(orderId);
             } else {
                 Toast.makeText(getActivity(), "Dispositivo não conectado a internet!", Toast.LENGTH_SHORT).show();
@@ -70,7 +71,7 @@ public class OrderDetailFragment extends Fragment implements OrderEvents {
 
     @Override
     public void getOrdersFailed(WebServiceResponse webServiceResponse) {
-
+        // se a busca falhar
         Toast.makeText(getActivity(), "Falha na consulta do pedido" +
                 webServiceResponse.getResponseMessage() + "- Código do erro: " +
                 webServiceResponse.getResponseCode(), Toast.LENGTH_SHORT).show();
@@ -80,6 +81,7 @@ public class OrderDetailFragment extends Fragment implements OrderEvents {
 
     @Override
     public void getOrderByIdFinished(Order order) {
+        // Se a busca com sucesso, mostra os detalhes do pedido
         txtId.setText(String.valueOf(order.getId()));
         txtEmail.setText(String.valueOf(order.getEmail()));
         txtFrete.setText(String.valueOf(order.getFreightPrice()));

@@ -9,18 +9,14 @@ public class Pedido implements Serializable {
 
     @Override
     public String toString() {
-        return "Pedido: " + this.orderId + " - Data: " +
-                this.dataPedido.replace("T", " ");
+        return "Pedido: " + this.orderId + " - Data: " + this.dataPedido.replace("T", " ");
     }
 
     public int getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(int orderId) {
-
-        this.orderId = orderId;
-    }
+    public void setOrderId(int orderId) { this.orderId = orderId; }
 
     public String getDataPedido() {
         return dataPedido;

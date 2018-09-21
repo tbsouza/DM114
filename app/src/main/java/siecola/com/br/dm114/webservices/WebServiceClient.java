@@ -170,6 +170,7 @@ public class WebServiceClient {
             webServiceResponse.setResponseCode(conn.getResponseCode());
             webServiceResponse.setResponseMessage(conn.getResponseMessage());
             is.close();
+
         } catch (IOException e) {
             webServiceResponse = new WebServiceResponse();
             webServiceResponse.setResponseCode(0);
@@ -180,6 +181,53 @@ public class WebServiceClient {
 
         return webServiceResponse;
     }
+
+    public static WebServiceResponse put(Context context, String host, String json) {
+        WebServiceResponse webServiceResponse;
+        InputStream is = null;
+
+        try {
+            webServiceResponse = init(context, host, WSConstants.METHOD_PUT);
+            if (webServiceResponse.getResponseCode() != 200) {
+                return webServiceResponse;
+            }
+            conn.setDoInput(true);
+            conn.connect();
+            if (conn.getResponseCode() == 401) {
+                invalidateToken(context);
+                webServiceResponse = init(context, host, WSConstants.METHOD_PUT);
+                if (webServiceResponse.getResponseCode() != 200) {
+                    return webServiceResponse;
+                } else {
+                    conn.setDoInput(true);
+                    conn.setFixedLengthStreamingMode(json.length());
+                    conn.getOutputStream().write(json.getBytes("UTF-8"));
+                    conn.getOutputStream().flush();
+                    conn.getOutputStream().close();
+                    conn.connect();
+                }
+            }
+
+            is = conn.getInputStream();
+            webServiceResponse = new WebServiceResponse();
+            webServiceResponse.setResultMessage(readIt(is));
+            webServiceResponse.setResponseCode(conn.getResponseCode());
+            webServiceResponse.setResponseMessage(conn.getResponseMessage());
+            is.close();
+        } catch (IOException e) {
+            webServiceResponse = new WebServiceResponse();
+            webServiceResponse.setResponseCode(0);
+            webServiceResponse.setResponseMessage(e.getMessage());
+        } finally {
+            conn.disconnect();
+        }
+
+        return webServiceResponse;
+    }
+
+
+    //TODO delete method
+    //TODO post method
 
 
     private static boolean isTokenValid(Context context) {

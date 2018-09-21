@@ -22,6 +22,7 @@ import siecola.com.br.dm114.R;
 import siecola.com.br.dm114.fragments.GCMFragment;
 import siecola.com.br.dm114.fragments.ListaPedidosFragment;
 import siecola.com.br.dm114.fragments.LoginFragment;
+import siecola.com.br.dm114.fragments.OrdersFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -113,10 +114,10 @@ public class MainActivity extends AppCompatActivity
                     fragment = (Fragment) fragmentClass.newInstance();
                     break;
                 case R.id.nav_produtos:
+                    fragmentClass = OrdersFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
                     break;
                 case R.id.nav_pedidos:
-                    fragmentClass = ListaPedidosFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
                     break;
                 case R.id.nav_notificacoes:
                     fragmentClass = GCMFragment.class;

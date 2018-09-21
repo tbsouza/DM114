@@ -13,10 +13,12 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import siecola.com.br.dm114.R;
 import siecola.com.br.dm114.models.Order;
+import siecola.com.br.dm114.models.Pedido;
 import siecola.com.br.dm114.tasks.OrderEvents;
 import siecola.com.br.dm114.tasks.OrderTasks;
 import siecola.com.br.dm114.utils.CheckNetworkConnection;
@@ -33,7 +35,7 @@ public class OrdersFragment extends Fragment implements OrderEvents {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_orders_list, container, false);
-        getActivity().setTitle("Orders");
+        getActivity().setTitle("Pedidos");
 
         listViewOrders = (ListView) rootView.findViewById(R.id.orders_list);
 
@@ -45,7 +47,6 @@ public class OrdersFragment extends Fragment implements OrderEvents {
                     }
                 }
         );
-
 
         // Verifica se tem conexao
         if (CheckNetworkConnection.isNetworkConnected(getActivity())) {
