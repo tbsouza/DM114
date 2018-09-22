@@ -61,7 +61,7 @@ public class GCMRegister {
     }
 
 
-    private void clearRegistrationId() {
+    public void clearRegistrationId() {
         final SharedPreferences prefs = getGCMPreferences();
         SharedPreferences.Editor editor = prefs.edit();
         editor.remove(PROPERTY_REG_ID);
@@ -91,6 +91,7 @@ public class GCMRegister {
 
     public String getRegistrationId(String senderID) {
         this.senderID = senderID;
+        //this.senderID = PROPERTY_SENDER_ID;
 
         setSenderId(senderID);
         regid = getCurrentRegistrationId();
@@ -145,7 +146,7 @@ public class GCMRegister {
 
 
     @SuppressLint("StaticFieldLeak")
-    private void registerBackground() {
+    public void registerBackground() {
         new AsyncTask<Void, Void, String>() {
 
             @Override

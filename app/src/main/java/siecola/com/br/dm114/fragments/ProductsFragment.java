@@ -21,37 +21,24 @@ import siecola.com.br.dm114.models.Pedido;
 import siecola.com.br.dm114.tasks.OrderEvents;
 import siecola.com.br.dm114.webservices.WebServiceResponse;
 
-public class ListaPedidosFragment extends Fragment implements OrderEvents {
+public class ProductsFragment extends Fragment implements OrderEvents {
 
     private ListView listViewPedidos;
     private List<Pedido> pedidos;
 
-    public ListaPedidosFragment() {
+    public ProductsFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_lista_pedidos, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_lista_produtos, container, false);
 
         getActivity().setTitle("Pedidos");
 
         // diz ao android que esta classe possui um menu proprio
         setHasOptionsMenu(true);
 
-        pedidos = new ArrayList<Pedido>();
-        for (int j = 0; j < 50; j++) {
-            Pedido pedidoAux = new Pedido();
-            pedidoAux.setOrderId(j);
-            pedidoAux.setDataPedido("10/04/2016 11:50:00");
-            pedidos.add(pedidoAux);
-        }
-
-        listViewPedidos = (ListView) rootView.findViewById(R.id.listPedidos);
-
-        //
-        listViewPedidos.setAdapter(new ArrayAdapter<Pedido>(
-                getActivity(), android.R.layout.simple_list_item_1, pedidos));
 
         return rootView;
     }

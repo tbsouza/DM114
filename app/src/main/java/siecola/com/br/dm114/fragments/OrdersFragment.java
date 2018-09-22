@@ -37,8 +37,8 @@ public class OrdersFragment extends Fragment implements OrderEvents {
         View rootView = inflater.inflate(R.layout.fragment_orders_list, container, false);
         getActivity().setTitle("Pedidos");
 
+        // Acao de click para exibir detalhes
         listViewOrders = (ListView) rootView.findViewById(R.id.orders_list);
-
         listViewOrders.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
@@ -50,7 +50,6 @@ public class OrdersFragment extends Fragment implements OrderEvents {
 
         // Verifica se tem conexao
         if (CheckNetworkConnection.isNetworkConnected(getActivity())) {
-
             OrderTasks orderTasks = new OrderTasks(getActivity(), this);
             // pega todas as orders
             orderTasks.getOrders();
@@ -84,7 +83,7 @@ public class OrdersFragment extends Fragment implements OrderEvents {
             transaction.commit();
         } catch (Exception e) {
             try {
-                Toast.makeText(getActivity(), "Erro ao tentar abrir detalhes do pedido", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Erro ao tentar abrir detalhes do pedido", Toast.LENGTH_LONG).show();
             } catch (Exception e1) {
             }
         }
@@ -95,7 +94,7 @@ public class OrdersFragment extends Fragment implements OrderEvents {
     public void getOrdersFailed(WebServiceResponse webServiceResponse) {
         Toast.makeText(getActivity(), "Falha na consulta da lista de pedidos" +
                 webServiceResponse.getResultMessage() + " - Código do erro: " +
-                webServiceResponse.getResponseCode(), Toast.LENGTH_SHORT).show();
+                webServiceResponse.getResponseCode(), Toast.LENGTH_LONG).show();
     }
 
 

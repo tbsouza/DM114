@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ import java.io.IOException;
 import siecola.com.br.dm114.R;
 import siecola.com.br.dm114.gcm.GCMRegister;
 import siecola.com.br.dm114.gcm.GCMRegisterEvents;
+import siecola.com.br.dm114.models.OrderInfo;
 
 public class GCMFragment extends Fragment implements GCMRegisterEvents {
 
@@ -29,10 +31,12 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
     private TextView txtEmail;
     private TextView txtStatus;
     private TextView txtReason;
+    private EditText edtSenderId;
 
+    private OrderInfo orderInfo;
     private String registrationID;
     private GCMRegister gcmRegister;
-    //private OrderInfo orderInfo;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,8 +47,13 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
         // Infla a activity a ser exibida
         View rootView = inflater.inflate(R.layout.fragment_gcm, container, false);
 
-        // Instancia do shared preferences
+        // Instancia o shared preferences
         preferences = getActivity().getSharedPreferences(getActivity().getClass().getSimpleName(), Context.MODE_PRIVATE);
+
+        // Instancia GCMRegister se não instanciado
+        if (gcmRegister == null) {
+            gcmRegister = new GCMRegister(getActivity(), this);
+        }
 
         btnRegister = (Button) rootView.findViewById(R.id.btnRegister);
         btnUnregister = (Button) rootView.findViewById(R.id.btnUnregister);
@@ -54,23 +63,30 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
         txtEmail = (TextView) rootView.findViewById(R.id.txtEmail);
         txtStatus = (TextView) rootView.findViewById(R.id.txtStatus);
         txtReason = (TextView) rootView.findViewById(R.id.txtReason);
+        edtSenderId = (EditText) rootView.findViewById(R.id.edtSenderID);
 
+        btnUnregister.setEnabled(true);
+        btnRegister.setEnabled(true);
 
         // botao de registrar
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // pega o registration id digitado
+                String senderId = edtSenderId.getText().toString();
 
-                // pega o geistration id digitado
-                registrationID = gcmRegister.getRegistrationId();
+                if(senderId.isEmpty()){
+                    Toast.makeText(getActivity(), "Digite o sender ID", Toast.LENGTH_SHORT).show();
+                }else {
+                    registrationID = gcmRegister.getRegistrationId(senderId);
 
-
-                if ( registrationID.isEmpty() ) {
-                    Toast.makeText(getActivity(), "Digite o registration ID", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    // se nao for vazio registra
-                    register(registrationID);
+                    if ( (registrationID == null) || (registrationID.length() == 0) ) {
+                        Toast.makeText(getActivity(), "Dispositivo não registrado.", Toast.LENGTH_SHORT).show();
+                        setValueClear(); // limpa os campos
+                    } else {
+                        // se nao for vazio registra
+                        register();
+                    }
                 }
             }
         });
@@ -79,7 +95,8 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
         btnUnregister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gcmRegister.unRegister();
+                // unregistra do GCM
+                unregister();
             }
         });
 
@@ -87,7 +104,7 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
         btnClearMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // limpa os campos
+                // Limpa os campos do fragment
                 txtOrderId.setText("");
                 txtEmail.setText("");
                 txtStatus.setText("");
@@ -95,33 +112,79 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
             }
         });
 
+
+        // Se GCM não tiver expirado
+        if (!gcmRegister.isRegistrationExpired()) {
+            registrationID = gcmRegister.getCurrentRegistrationId();
+            setValue(registrationID);
+        } else {
+            setValueClear(); // limpa os campos
+        }
+
+        Bundle bundle = this.getArguments();
+        if ((bundle != null) && (bundle.containsKey("orderInfo"))) {
+            orderInfo = (OrderInfo) bundle.getSerializable("orderInfo");
+            txtOrderId.setText(Long.toString(orderInfo.getId()));
+            txtEmail.setText(orderInfo.getEmail());
+            txtStatus.setText(orderInfo.getStatus());
+            txtReason.setText(orderInfo.getReason());
+        }
+
+        //register();
+
         return rootView;
     }
 
+
     private void unregister() {
+        // unregistra do GCM
+        gcmRegister.unRegister();
     }
 
-    private void register(String registrationID) {
+    private void register() {
+        // Verifica se ainda não expirou
+        gcmRegister.registerBackground();
     }
 
 
     @Override
     public void gcmRegisterFinished(String registrationID) {
-
+        // Apos registrar com sucesso
+        Toast.makeText(getActivity(), "Registrado com sucesso.", Toast.LENGTH_SHORT).show();
+        // atualiza os campos na tela
+        setValue(registrationID);
     }
 
     @Override
     public void gcmRegisterFailed(IOException ex) {
-
+        // Registro com falha
+        Toast.makeText(getActivity(), "Falha ao registrar.", Toast.LENGTH_SHORT).show();
+        // atualiza os campos na tela
+        setValueClear();
     }
 
     @Override
     public void gcmUnregisterFinished() {
-
+        // Unregistro com sucesso
+        Toast.makeText(getActivity(), "Unregistrado com sucesso.", Toast.LENGTH_SHORT).show();
+        // Limpa os campos
+        setValueClear();
     }
 
     @Override
     public void gcmUnregisterFailed(IOException ex) {
+        // Unregistro com falha
+        Toast.makeText(getActivity(), "Falha ao unregistrar.", Toast.LENGTH_SHORT).show();
+    }
 
+
+    public void setValue(String value) {
+        txtRegistrationID.setText(value);
+        // Desabilita os botões
+    }
+
+    public void setValueClear() {
+        txtRegistrationID.setText("");
+        // Desabilita os botões
     }
 }

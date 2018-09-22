@@ -105,7 +105,8 @@ public class LoginFragment extends Fragment implements OrderEvents {
                 WebServiceResponse response = WebServiceClient.init(getActivity(), WSUtil.getHostAddress(getActivity()), WSConstants.METHOD_GET);
                 if( response.getResponseCode() == 200 ){
                     Toast.makeText(getActivity(), "Autenticado com sucesso: ", Toast.LENGTH_SHORT).show();
-                    changeFragment( ListaPedidosFragment.class );
+                    // Redireciona para tela de pedidos
+                    changeFragment( OrdersFragment.class );
                 }
 
             } catch (IOException e) {

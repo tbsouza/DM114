@@ -20,7 +20,6 @@ import android.view.MenuItem;
 
 import siecola.com.br.dm114.R;
 import siecola.com.br.dm114.fragments.GCMFragment;
-import siecola.com.br.dm114.fragments.ListaPedidosFragment;
 import siecola.com.br.dm114.fragments.LoginFragment;
 import siecola.com.br.dm114.fragments.OrdersFragment;
 
