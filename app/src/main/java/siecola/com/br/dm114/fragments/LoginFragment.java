@@ -19,6 +19,7 @@ import java.util.List;
 
 import siecola.com.br.dm114.R;
 import siecola.com.br.dm114.gcm.GCMRegister;
+import siecola.com.br.dm114.gcm.GCMRegisterEvents;
 import siecola.com.br.dm114.models.Order;
 import siecola.com.br.dm114.tasks.OrderEvents;
 import siecola.com.br.dm114.utils.CheckNetworkConnection;
@@ -27,13 +28,16 @@ import siecola.com.br.dm114.utils.WSUtil;
 import siecola.com.br.dm114.webservices.WebServiceClient;
 import siecola.com.br.dm114.webservices.WebServiceResponse;
 
-public class LoginFragment extends Fragment implements OrderEvents {
+public class LoginFragment extends Fragment implements GCMRegisterEvents {
 
     // Nome do shared preference de login e senha do usuario
     private static String PREF_LOGIN = "pref_login";
     private static String PREF_PASSWORD = "pref_password";
+    private static String SENDER_ID = "574033931406";
+
     private SharedPreferences preferences;
     private GCMRegister gcmRegister;
+    private String registrationID;
 
     // Variaveis de login e senha
     private String login;
@@ -93,10 +97,26 @@ public class LoginFragment extends Fragment implements OrderEvents {
     }
 
     private void registerGCM(Activity activity) {
+        // Registr no GCM
 
+        SharedPreferences.Editor editor = preferences.edit();
 
+        // Instancia GCMRegister
+        if (gcmRegister == null) {
+            gcmRegister = new GCMRegister(getActivity(), this);
+        }
+
+        // Pega o Registration ID
+        registrationID = gcmRegister.getRegistrationId(SENDER_ID);
+
+        if ((registrationID == null) || (registrationID.length() == 0)) {
+            Toast.makeText(getActivity(), "Tesntando registrar Dispositivo.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getActivity(), "Dispositivo registrado no GCM.", Toast.LENGTH_SHORT).show();
+            gcmRegister.registerBackground();
+            Toast.makeText(getActivity(), registrationID, Toast.LENGTH_SHORT).show();
+        }
     }
-
 
     private void autenticar() {
 
@@ -137,23 +157,24 @@ public class LoginFragment extends Fragment implements OrderEvents {
     }
 
 
+
     @Override
-    public void getOrdersFinished(List<Order> orders) {
+    public void gcmRegisterFinished(String registrationID) {
+        Toast.makeText(getActivity(), "GCM registrado com sucesso.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void gcmRegisterFailed(IOException ex) {
+        Toast.makeText(getActivity(), "Falha ao registrar no GCM.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void gcmUnregisterFinished() {
 
     }
 
     @Override
-    public void getOrdersFailed(WebServiceResponse webServiceResponse) {
-
-    }
-
-    @Override
-    public void getOrderByIdFinished(Order order) {
-
-    }
-
-    @Override
-    public void getOrderByIdFailed(WebServiceResponse webServiceResponse) {
+    public void gcmUnregisterFailed(IOException ex) {
 
     }
 }

@@ -18,7 +18,8 @@ public class GCMRegister {
     private static final String TAG = "GCMRegister";
     private static final String PROPERTY_ON_SERVER_EXPIRATION_TIME = "onServerExpirationTimeMs";
     private static final String PROPERTY_REG_ID = "registration_id";
-    static final String PROPERTY_SENDER_ID = "senderID";
+    static final String PROPERTY_SENDER_ID = "senderId";
+    static final String  SENDER_ID = "574033931406";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private IOException ioException;
     private static final long REGISTRATION_EXPIRY_TIME_MS = 1000 * 3600 * 24 * 7;
@@ -91,7 +92,7 @@ public class GCMRegister {
 
     public String getRegistrationId(String senderID) {
         this.senderID = senderID;
-        //this.senderID = PROPERTY_SENDER_ID;
+        //this.senderID = SENDER_ID;
 
         setSenderId(senderID);
         regid = getCurrentRegistrationId();
@@ -127,7 +128,7 @@ public class GCMRegister {
 
     public String getSenderId() {
         final SharedPreferences prefs = getGCMPreferences();
-        String senderId = prefs.getString(PROPERTY_SENDER_ID, "");
+        String senderId = prefs.getString(PROPERTY_SENDER_ID, SENDER_ID);
 
         if (senderId.length() == 0) {
             return "";
@@ -156,6 +157,7 @@ public class GCMRegister {
                     if (gcm == null) {
                         gcm = GoogleCloudMessaging.getInstance(context);
                     }
+
                     regid = gcm.register(senderID);
                     setRegistrationId(regid);
                     msg = regid;

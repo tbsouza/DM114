@@ -3,11 +3,14 @@ package siecola.com.br.dm114.fragments;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import siecola.com.br.dm114.R;
+import siecola.com.br.dm114.adapter.OrderAdapter;
 import siecola.com.br.dm114.models.Order;
 import siecola.com.br.dm114.models.Pedido;
 import siecola.com.br.dm114.tasks.OrderEvents;
@@ -26,10 +30,12 @@ import siecola.com.br.dm114.webservices.WebServiceResponse;
 
 public class OrdersFragment extends Fragment implements OrderEvents {
 
-    // Mostra detalhes do pedido
+    private static String PREF_LOGIN = "pref_login";
 
     private ListView listViewOrders;
     private List<Order> orders;
+    ArrayAdapter<String> adapter;
+    private SharedPreferences preferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,8 +43,12 @@ public class OrdersFragment extends Fragment implements OrderEvents {
         View rootView = inflater.inflate(R.layout.fragment_orders_list, container, false);
         getActivity().setTitle("Pedidos");
 
+        // Instancia do shared preferences
+        preferences = getActivity().getSharedPreferences(getActivity().getClass().getSimpleName(), Context.MODE_PRIVATE);
+
         // Acao de click para exibir detalhes
         listViewOrders = (ListView) rootView.findViewById(R.id.orders_list);
+        //Acao de click da order
         listViewOrders.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
@@ -48,9 +58,10 @@ public class OrdersFragment extends Fragment implements OrderEvents {
                 }
         );
 
-        // Verifica se tem conexao
+        // Verifica conexao
         if (CheckNetworkConnection.isNetworkConnected(getActivity())) {
             OrderTasks orderTasks = new OrderTasks(getActivity(), this);
+
             // pega todas as orders
             orderTasks.getOrders();
         }
@@ -93,7 +104,7 @@ public class OrdersFragment extends Fragment implements OrderEvents {
     @Override
     public void getOrdersFailed(WebServiceResponse webServiceResponse) {
         Toast.makeText(getActivity(), "Falha na consulta da lista de pedidos" +
-                webServiceResponse.getResultMessage() + " - Código do erro: " +
+                webServiceResponse.getResultMessage() + " - Código: " +
                 webServiceResponse.getResponseCode(), Toast.LENGTH_LONG).show();
     }
 
@@ -111,10 +122,11 @@ public class OrdersFragment extends Fragment implements OrderEvents {
 
     @Override
     public void getOrdersFinished(List<Order> orders) {
-        this.orders = orders; // salva as order na variavel
+        this.orders = orders; // salva as orders na variavel
 
-       // OrderAdapter orderAdapter = new OrderAdapter(getActivity(), orders);
-       // listViewOrders.setAdapter(orderAdapter);
+        // Aplica o adapter na lista de orders
+       OrderAdapter orderAdapter = new OrderAdapter(getActivity(), orders);
+       listViewOrders.setAdapter(orderAdapter);
     }
 
     @Override
@@ -125,6 +137,4 @@ public class OrdersFragment extends Fragment implements OrderEvents {
 
         super.onSaveInstanceState(outState);
     }
-
-
 }

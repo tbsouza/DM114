@@ -38,6 +38,8 @@ public class ProductTasks {
 
     @SuppressLint("StaticFieldLeak")
     public void getProducts() {
+
+        // Cria e execua uma thread assincrona
         new AsyncTask<Void, Void, WebServiceResponse>() {
             @Override
             protected WebServiceResponse doInBackground(Void... params) {

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/productListItem"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+
+    <TextView android:id="@+id/productListItemNumber"
+        android:layout_width="0dp"
+        android:layout_margin="4dip"
+        android:layout_weight="0.15"
+        android:layout_height="wrap_content"
+        android:paddingTop="12dip"
+        android:paddingBottom="12dip"
+        android:text=""/>
+
+    <TextView android:id="@+id/productListItemCode"
+        android:layout_width="0dp"
+        android:layout_margin="4dip"
+        android:layout_weight="0.90"
+        android:layout_height="wrap_content"
+        android:paddingTop="12dip"
+        android:paddingBottom="12dip"
+        android:gravity="center"
+        android:text=""/>
+
+    <TextView
+        android:id="@+id/productListItemName"
+        android:layout_width="0dp"
+        android:layout_margin="4dip"
+        android:layout_weight="0.50"
+        android:layout_height="wrap_content"
+        android:paddingTop="12dip"
+        android:paddingBottom="12dip"
+        android:gravity="center"
+        android:text=""/>
+
+    <TextView
+        android:id="@+id/productListItemPrice"
+        android:layout_width="0dp"
+        android:layout_margin="4dip"
+        android:layout_weight="0.50"
+        android:layout_height="wrap_content"
+        android:paddingTop="12dip"
+        android:paddingBottom="12dip"
+        android:gravity="center"
+        android:text=""/>
+</LinearLayout>

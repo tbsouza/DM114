@@ -22,6 +22,7 @@ import siecola.com.br.dm114.models.OrderInfo;
 public class GCMFragment extends Fragment implements GCMRegisterEvents {
 
     private SharedPreferences preferences;
+    static final String PROPERTY_SENDER_ID = "senderId";
 
     private Button btnUnregister;
     private Button btnRegister;
@@ -55,6 +56,9 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
             gcmRegister = new GCMRegister(getActivity(), this);
         }
 
+        // bundle
+        final Bundle bundle = this.getArguments();
+
         btnRegister = (Button) rootView.findViewById(R.id.btnRegister);
         btnUnregister = (Button) rootView.findViewById(R.id.btnUnregister);
         btnClearMessage = (Button) rootView.findViewById(R.id.btnClearMessage);
@@ -72,8 +76,12 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                SharedPreferences.Editor editor = preferences.edit();
+
                 // pega o registration id digitado
                 String senderId = edtSenderId.getText().toString();
+                editor.putString(PROPERTY_SENDER_ID, senderId);
 
                 if(senderId.isEmpty()){
                     Toast.makeText(getActivity(), "Digite o sender ID", Toast.LENGTH_SHORT).show();
@@ -81,11 +89,12 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
                     registrationID = gcmRegister.getRegistrationId(senderId);
 
                     if ( (registrationID == null) || (registrationID.length() == 0) ) {
-                        Toast.makeText(getActivity(), "Dispositivo não registrado.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Tentando Registrar dispositivo.", Toast.LENGTH_SHORT).show();
                         setValueClear(); // limpa os campos
                     } else {
                         // se nao for vazio registra
                         register();
+                        setArgumentsGCM( bundle );
                     }
                 }
             }
@@ -112,7 +121,6 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
             }
         });
 
-
         // Se GCM não tiver expirado
         if (!gcmRegister.isRegistrationExpired()) {
             registrationID = gcmRegister.getCurrentRegistrationId();
@@ -121,7 +129,12 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
             setValueClear(); // limpa os campos
         }
 
-        Bundle bundle = this.getArguments();
+        setArgumentsGCM( this.getArguments() );
+
+        return rootView;
+    }
+
+    private void setArgumentsGCM( Bundle bundle ){
         if ((bundle != null) && (bundle.containsKey("orderInfo"))) {
             orderInfo = (OrderInfo) bundle.getSerializable("orderInfo");
             txtOrderId.setText(Long.toString(orderInfo.getId()));
@@ -129,12 +142,7 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
             txtStatus.setText(orderInfo.getStatus());
             txtReason.setText(orderInfo.getReason());
         }
-
-        //register();
-
-        return rootView;
     }
-
 
     private void unregister() {
         // unregistra do GCM
@@ -150,7 +158,7 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
     @Override
     public void gcmRegisterFinished(String registrationID) {
         // Apos registrar com sucesso
-        Toast.makeText(getActivity(), "Registrado com sucesso.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Registrado com sucesso.", Toast.LENGTH_LONG).show();
         // atualiza os campos na tela
         setValue(registrationID);
     }
@@ -180,11 +188,9 @@ public class GCMFragment extends Fragment implements GCMRegisterEvents {
 
     public void setValue(String value) {
         txtRegistrationID.setText(value);
-        // Desabilita os botões
     }
 
     public void setValueClear() {
         txtRegistrationID.setText("");
-        // Desabilita os botões
     }
 }

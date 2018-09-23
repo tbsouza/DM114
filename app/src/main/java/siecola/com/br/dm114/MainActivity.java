@@ -22,6 +22,7 @@ import siecola.com.br.dm114.R;
 import siecola.com.br.dm114.fragments.GCMFragment;
 import siecola.com.br.dm114.fragments.LoginFragment;
 import siecola.com.br.dm114.fragments.OrdersFragment;
+import siecola.com.br.dm114.fragments.ProductsFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        // Mostra o fragment selecionado
         showFragment(id);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -113,10 +115,12 @@ public class MainActivity extends AppCompatActivity
                     fragment = (Fragment) fragmentClass.newInstance();
                     break;
                 case R.id.nav_produtos:
-                    fragmentClass = OrdersFragment.class;
+                    fragmentClass = ProductsFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     break;
                 case R.id.nav_pedidos:
+                    fragmentClass = OrdersFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
                     break;
                 case R.id.nav_notificacoes:
                     fragmentClass = GCMFragment.class;
@@ -135,8 +139,6 @@ public class MainActivity extends AppCompatActivity
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit();
         }
-
-
     }
 
     // Cria um canal de notificacao
